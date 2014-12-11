@@ -83,7 +83,7 @@ def debug():
 # Run the app. Visit localhost:5000 to subscribe, and send messages
 # by visiting localhost:5000/publish
 if __name__ == '__main__':
-    app.debug = True
-    port = int(os.environ.get('PORT', 5000))
-    server = WSGIServer(('0.0.0.0', 5000), app)
-    server.serve_forever()
+    app.run(debug = True)
+    # port = int(os.environ.get('PORT', 5000))
+    # server = WSGIServer(('0.0.0.0', 5000), app)
+    # server.serve_forever()
