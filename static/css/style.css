@@ -1,0 +1,36 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#events {
+    overflow: hidden;
+    position: relative;
+
+    height: 100%;
+    width: 100%;
+    /* Lime green */
+    background: #32CD32;
+}
+
+.circle {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: white;
+
+    -webkit-animation: ripple 2.5s;
+}
+
+@-webkit-keyframes ripple {
+    from {
+        -webkit-transform: scale(0.2);
+        opacity: 0.6;
+    }
+    to {
+        -webkit-transform: scale(100);
+        opacity: 0;
+    }
+}
