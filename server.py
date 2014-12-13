@@ -6,6 +6,9 @@ from gevent.queue import Queue
 from flask import Flask, Response, request, render_template
 
 
+TRIGGER_EVENTS = ['edx.bi.user.account.registered', 'edx.course.enrollment.activated']
+
+
 class ServerSentEvent(object):
     """A message to be included in an event stream.
 
@@ -76,16 +79,17 @@ def publish():
     webhook's payload.
 
     Returns:
-        Status code 200 if a message is published successfully.
+        Status code 200 if a message is published successfully, or if no action
+            is taken.
     """
     def notify():
         message = str(time.time())
         for subscription in subscriptions:
             subscription.put(message)
 
-    # data = request.get_json()
-    # if data.get('event') == 'edx.bi.user.account.authenticated':
-    gevent.spawn(notify)
+    data = request.get_json()
+    if data.get('event') in TRIGGER_EVENTS:
+        gevent.spawn(notify)
 
     return "OK"
 
