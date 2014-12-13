@@ -1,5 +1,4 @@
 import os
-import time
 
 import gevent
 from gevent.queue import Queue
@@ -7,7 +6,6 @@ from flask import Flask, Response, request, render_template
 
 
 TRIGGER_EVENTS = ['edx.bi.user.account.registered', 'edx.course.enrollment.activated']
-TIMEOUT = 25.0
 
 
 class ServerSentEvent(object):
@@ -60,7 +58,6 @@ class ServerSentEvent(object):
 
 app = Flask(__name__)
 subscriptions = []
-t0 = time.time()
 
 
 @app.route('/')
@@ -92,12 +89,6 @@ def publish():
     event_name = data.get('event')
     if event_name in TRIGGER_EVENTS:
         gevent.spawn(notify, event_name)
-    else:
-        # Periodically send a comment line to prevent request timeouts
-        t1 = time.time()
-        if t1 - t0 > TIMEOUT:
-            gevent.spawn(notify, ':keep-alive\n\n')
-            t0 = t1
 
     return "OK"
 
