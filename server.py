@@ -7,6 +7,7 @@ from flask import Flask, Response, request, render_template
 
 
 TRIGGER_EVENTS = ['edx.bi.user.account.registered', 'edx.course.enrollment.activated']
+TIMEOUT = 25.0
 
 
 class ServerSentEvent(object):
@@ -45,7 +46,7 @@ class ServerSentEvent(object):
 
         According to the specification, an event stream is a simple stream of text
         data, which must be encoded using UTF-8. Each message should be separated
-        by a pair of newline characters.
+        by a pair of newline characters (i.e., a blank line).
         """
         if not self.data:
             # A colon as the first character of a message makes the message, in
@@ -59,6 +60,7 @@ class ServerSentEvent(object):
 
 app = Flask(__name__)
 subscriptions = []
+t0 = time.time()
 
 
 @app.route('/')
@@ -82,14 +84,20 @@ def publish():
         Status code 200 if a message is published successfully, or if no action
             is taken.
     """
-    def notify():
-        message = str(time.time())
+    def notify(message):
         for subscription in subscriptions:
             subscription.put(message)
 
     data = request.get_json()
-    if data.get('event') in TRIGGER_EVENTS:
-        gevent.spawn(notify)
+    event_name = data.get('event')
+    if event_name in TRIGGER_EVENTS:
+        gevent.spawn(notify, event_name)
+    else:
+        # Periodically send a comment line to prevent request timeouts
+        t1 = time.time()
+        if t1 - t0 > TIMEOUT:
+            gevent.spawn(notify, ':keep-alive\n\n')
+            t0 = t1
 
     return "OK"
 
@@ -107,6 +115,9 @@ def subscribe():
     def events():
         queue = Queue()
         subscriptions.append(queue)
+
+        # Send a comment line to prevent request timeouts
+        queue.put(':keep-alive\n\n')
 
         try:
             for message in queue:
