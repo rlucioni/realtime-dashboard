@@ -5,7 +5,8 @@ from gevent.queue import Queue
 from flask import Flask, Response, request, render_template
 
 
-TRIGGER_EVENTS = ['edx.bi.user.account.registered', 'edx.course.enrollment.activated']
+# 'edx.bi.user.account.registered' would also be a good one
+TRIGGER_EVENTS = ['edx.course.enrollment.activated']
 
 
 class ServerSentEvent(object):
