@@ -1,7 +1,7 @@
 html, body {
-  margin: 0;
-  height: 100%;
-  width: 100%;
+    margin: 0;
+    height: 100%;
+    width: 100%;
 }
 
 #events {
@@ -21,7 +21,7 @@ html, body {
     border-radius: 50%;
     background: white;
 
-    -webkit-animation: ripple 2.5s;
+    -webkit-animation: ripple 2s;
 }
 
 @-webkit-keyframes ripple {
