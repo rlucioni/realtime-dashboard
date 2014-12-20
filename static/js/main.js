@@ -2,7 +2,7 @@
     // The EventSource interface is used to receive server-sent events. It
     // connects to a server over HTTP and receives events in "text/event-stream"
     // format without closing the connection. Read more at http://goo.gl/zftAYW.
-    var eventSource = new EventSource( '/subscribe' ),
+    var eventSource = new EventSource( '/stream' ),
         eventContainer = $( '#events' ),
         $div = $( '<div/>' );
 

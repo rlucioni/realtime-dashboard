@@ -52,13 +52,39 @@ class ServerSentEvent(object):
             # essence, a comment. Messages beginning with a colon are ignored.
             return ':'
 
+        # Process attributes, turning them into the lines of a message.
         lines = ['{}: {}'.format(key, value) for key, value in self.field_map.iteritems() if value]
 
+        # Return a message which ends in a blank line and whose lines are separated
+        # by a single newline character.
         return '{}\n\n'.format('\n'.join(lines))
 
 
 app = Flask(__name__)
 subscriptions = []
+
+
+def notify(message):
+    """Publish a message to all subscribers."""
+    for subscription in subscriptions:
+        subscription.put(message)
+
+
+def event_stream():
+    """Generate an event stream."""
+    subscription = Queue()
+    subscriptions.append(subscription)
+
+    # Send a comment line to prevent request timeouts
+    subscription.put(':keep-alive\n\n')
+
+    try:
+        for message in subscription:
+            event = ServerSentEvent(str(message))
+            # Each yield is sent to the client.
+            yield event.encode()
+    except GeneratorExit:
+        subscriptions.remove(subscription)
 
 
 @app.route('/')
@@ -82,20 +108,17 @@ def publish():
         Status code 200 if a message is published successfully, or if no action
             is taken.
     """
-    def notify(message):
-        for subscription in subscriptions:
-            subscription.put(message)
-
     data = request.get_json()
     event_name = data.get('event')
+
     if event_name in TRIGGER_EVENTS:
         gevent.spawn(notify, event_name)
 
     return "OK"
 
 
-@app.route('/subscribe')
-def subscribe():
+@app.route('/stream')
+def stream():
     """Generate an event stream.
     
     Subscribes the client to future messages. Read more about this streaming
@@ -104,25 +127,10 @@ def subscribe():
     Returns:
         Status code 200 as events are generated successfully.
     """
-    def events():
-        queue = Queue()
-        subscriptions.append(queue)
-
-        # Send a comment line to prevent request timeouts
-        queue.put(':keep-alive\n\n')
-
-        try:
-            for message in queue:
-                event = ServerSentEvent(str(message))
-                # Each yield is sent to the client.
-                yield event.encode()
-        except GeneratorExit:
-            subscriptions.remove(queue)
-
-    return Response(events(), mimetype='text/event-stream')
+    return Response(event_stream(), mimetype='text/event-stream')
 
 
-@app.route('/subscription_count')
+@app.route('/subscriptions')
 def debug():
     """Show a count of subscriptions.
 
@@ -133,4 +141,4 @@ def debug():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
