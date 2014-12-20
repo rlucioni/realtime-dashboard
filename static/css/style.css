@@ -4,14 +4,14 @@ html, body {
     width: 100%;
 }
 
-#events {
+#ripple-container {
     overflow: hidden;
     position: relative;
 
     height: 100%;
     width: 100%;
     /* Lime green */
-    background: #32CD32;
+    background: #32cd32;
 }
 
 .circle {
@@ -32,5 +32,39 @@ html, body {
     to {
         -webkit-transform: scale(100);
         opacity: 0;
+    }
+}
+
+#logo {
+  z-index: 2;
+  bottom: 14px;
+  right: 22px;
+  position: absolute; 
+}
+
+#logo a {
+    display: block;
+    padding-left: 60px;
+    background: url("../images/logo-edx-optimized-knockout.svg") left bottom no-repeat;
+    background-size: 61px 35px;
+    text-decoration: none;
+}
+
+#logo span {
+    display: inline-block;
+    vertical-align: bottom;
+    color: #fff;
+    font: 21px 'Montserrat', Arial, sans-serif;
+    line-height: 32px;
+    margin-left: 7px;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    -webkit-font-smoothing: antialiased;
+}
+
+@media only screen and (max-width: 600px) {
+    #logo {
+        top: 9px;
+        right: 12px;
+        bottom: auto;
     }
 }
