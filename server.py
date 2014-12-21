@@ -1,10 +1,13 @@
 import os
+from functools import wraps
 
 import gevent
 from gevent.queue import Queue
 from flask import Flask, Response, request, render_template
 
 
+USERNAME = str(os.environ.get('USERNAME'))
+PASSWORD = str(os.environ.get('PASSWORD'))
 TRIGGER_EVENTS = ['edx.course.enrollment.activated', 'edx.bi.user.account.registered', 'Completed Order']
 
 
@@ -63,6 +66,33 @@ app = Flask(__name__)
 subscriptions = []
 
 
+def check_credentials(username, password):
+    """Check if a username and password combination is valid."""
+    return username == USERNAME and password == PASSWORD
+
+
+def authenticate():
+    """Send a 401 response which enables basic auth."""
+    return Response(
+        'Authentication required',
+        401,
+        {'WWW-Authenticate': 'Basic realm="Authentication required"'}
+    )
+
+
+def requires_auth(route):
+    """Require authentication to access a route."""
+    @wraps(route)
+    def with_auth(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_credentials(auth.username, auth.password):
+            return authenticate()
+
+        return route(*args, **kwargs)
+
+    return with_auth
+
+
 def notify(message):
     """Publish a message to all subscribers."""
     for subscription in subscriptions:
@@ -88,6 +118,7 @@ def event_stream():
 
 
 @app.route('/')
+@requires_auth
 def index():
     """Render the index page.
 
@@ -118,6 +149,7 @@ def publish():
 
 
 @app.route('/stream')
+@requires_auth
 def stream():
     """Generate an event stream.
     
