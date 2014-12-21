@@ -5,8 +5,7 @@ from gevent.queue import Queue
 from flask import Flask, Response, request, render_template
 
 
-# 'edx.bi.user.account.registered' would also be a good one
-TRIGGER_EVENTS = ['edx.course.enrollment.activated']
+TRIGGER_EVENTS = ['edx.course.enrollment.activated', 'edx.bi.user.account.registered', 'Completed Order']
 
 
 class ServerSentEvent(object):
@@ -83,6 +82,7 @@ def event_stream():
             event = ServerSentEvent(str(message))
             # Each yield is sent to the client.
             yield event.encode()
+    # Exception raised when the generator is closed
     except GeneratorExit:
         subscriptions.remove(subscription)
 

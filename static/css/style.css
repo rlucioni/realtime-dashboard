@@ -1,70 +1,63 @@
 html, body {
-    margin: 0;
-    height: 100%;
-    width: 100%;
-}
+  margin: 0;
+  height: 100%;
+  width: 100%; }
 
 #ripple-container {
-    overflow: hidden;
-    position: relative;
-
-    height: 100%;
-    width: 100%;
-    /* Lime green */
-    background: #32cd32;
-}
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background: #9e9e9e; }
 
 .circle {
-    position: absolute;
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: white;
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  -webkit-animation: ripple 2s; }
 
-    -webkit-animation: ripple 2s;
-}
+.registration {
+  background: #e91e63; }
+
+.enrollment {
+  background: #03a9f4; }
+
+.payment {
+  background: limegreen; }
 
 @-webkit-keyframes ripple {
-    from {
-        -webkit-transform: scale(0.2);
-        opacity: 0.6;
-    }
-    to {
-        -webkit-transform: scale(100);
-        opacity: 0;
-    }
-}
-
+  from {
+    -webkit-transform: scale(0.2);
+    opacity: 0.6; }
+  to {
+    -webkit-transform: scale(100);
+    opacity: 0; } }
 #logo {
   z-index: 2;
   bottom: 14px;
   right: 22px;
-  position: absolute; 
-}
-
-#logo a {
+  position: absolute; }
+  #logo a {
     display: block;
     padding-left: 60px;
     background: url("../images/logo-edx-optimized-knockout.svg") left bottom no-repeat;
     background-size: 61px 35px;
-    text-decoration: none;
-}
-
-#logo span {
+    text-decoration: none; }
+  #logo span {
     display: inline-block;
     vertical-align: bottom;
     color: #fff;
-    font: 21px 'Montserrat', Arial, sans-serif;
+    font: 21px "Montserrat", Arial, sans-serif;
     line-height: 32px;
     margin-left: 7px;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-    -webkit-font-smoothing: antialiased;
-}
+    -webkit-font-smoothing: antialiased; }
 
 @media only screen and (max-width: 600px) {
-    #logo {
-        top: 9px;
-        right: 12px;
-        bottom: auto;
-    }
-}
+  #logo {
+    top: 9px;
+    right: 12px;
+    bottom: auto; } }
+
+/*# sourceMappingURL=style.css.map */
